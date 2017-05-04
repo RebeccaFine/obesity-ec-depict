@@ -1,0 +1,53 @@
+This is the code used for DEPICT analysis of ExomeChip data for BMI and WHR.
+It is almost the same as the code used for height, with a few minor
+differences (creating clumped null backgrounds + some of the output formats
+are a little different).
+
+In the source/ folder, there are three pieces of code.
+
+To create null backgrounds for analysis:
+1. obesity_sort_nulls_and_order_genes_clumped.py: example config file in
+example/example_obesity_sort_nulls_and_order_genes_clumped.cfg.
+This takes in each EC permutation, sorts by variants by p-value, and assigns
+each to a gene. Outputs a ranked list of genes for each permutation, which is
+used as input for the next piece of code.
+2. obesity-EC-DEPICT_forNulls.py: example config file in
+example/example_obesity-EC-DEPICT_forNulls.cfg 
+Example output is in example/example.nullorderedgenes
+This takes in ranked gene list from script #1 and calculates the test
+statistic for each permutation for each gene set. The number of input genes
+used to calculate null test statistic (i.e. how many genes to take from the
+top of the list for each permutation) must be matched to the number of
+significant genes used in the actual data. Outputs a null test statistic for
+each gene set for each permutation, which is used as a background file in
+script #3.
+Example output is in example/example.nullteststatistic.
+
+For actual gene set enrichment (using null background created by script #1 and
+script #2):
+3. obesity-EC-DEPICT.py: Performs the gene set enrichment analysis. Example
+input file in example/example_obesity-EC-DEPICT_forNulls.cfg.
+
+
+Reconstituted gene sets can be found at:
+http://www.broadinstitute.org/mpg/depict/depict_download/reconstituted_genesets/GPL570-GPL96-GPL1261-GPL1355TermGeneZScores-MGI_MF_CC_RT_IW_BP_KEGG_z_z.txt.gz
+
+The analyses file contain the full results for BMI and WHR. See README in that
+folder for interpretations.
+
+Data files (in data/):
+GO.terms_alt_ids_withoutheader.tab, VOC_MammalianPhenotype.rpt, and
+inweb_mapping.tab contain mappings from gene set IDs to full names.
+
+metacluster_labels.txt contains meta-gene set assignments for each gene set.
+
+mart_export_EnsemblConversion_hg19.txt contains mappings from HUGO to Ensembl
+IDs.
+
+obesity.filteredvariantannotations contains the variant annotations for
+ExomeChip SNPs that meet all filter criteria (present in BMI data, present in
+null ExomeChip data, annotation in CHARGE file is nonsynonymous or splice,
+gene is present in DEPICT). Annotations come from CHARGE consortium,
+obesity_MAFLess5.filteredvariantannotation is the same, but using only
+variants with a MAF less than .05. (These will be posted after paper is
+published).
